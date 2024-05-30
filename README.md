@@ -21,14 +21,14 @@ let metalink = new Metalink(file1, file2);
 ```
 
 ### file
-    - Syntax { `url`, `name`, `size`, `version`, `language`, `hash`, `metaurl` }
-    - [url](#url-required)
-    - [name](#name-optional)
-    - [size](#size-optional)
-    - [version](#version-optional)
-    - [language](#language-optional)
-    - [hash](#hash-optional)
-    - [metaurl](#metaurl-optional)
+- Syntax { `url`, `name`, `size`, `version`, `language`, `hash`, `metaurl` }
+- [url](#url-required)
+- [name](#name-optional)
+- [size](#size-optional)
+- [version](#version-optional)
+- [language](#language-optional)
+- [hash](#hash-optional)
+- [metaurl](#metaurl-optional)
 
 ### url *`required`*
 - The download url(s) of the file
