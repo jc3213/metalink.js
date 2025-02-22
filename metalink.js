@@ -8,6 +8,7 @@ class Metalink {
         this.dataURL = 'data:text/plain;base64,' + btoa(unescape(encodeURIComponent(this.text)));
         this.blob = new Blob([this.text], {type: 'application/metalink+xml; charset=utf-8'});
     }
+    version = '0.2';
     meta4 (arg) {
         let file = '    ';
         let {name, size, version, language, hash = [], url, metaurl = []} = arg;
