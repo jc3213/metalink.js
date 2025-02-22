@@ -1,8 +1,7 @@
 class Metalink {
     constructor (...args) {
         let encoder = new TextEncoder();
-        let trimmed = [...args].flat();
-        let metalink = ['<?xml version="1.0" encoding="UTF-8"?>\n<metalink version="4.0" xmlns="urn:ietf:params:xml:ns:metalink">', trimmed.map(this.meta4), '</metalink>'];
+        let metalink = ['<?xml version="1.0" encoding="UTF-8"?>\n<metalink version="4.0" xmlns="urn:ietf:params:xml:ns:metalink">', args.flat().map(this.meta4), '</metalink>'];
         this.text = metalink.join('\n');
         this.lines = this.text.split(/\n\s*/);
         this.arrayBuffer = encoder.encode(this.text);
