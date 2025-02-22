@@ -2,7 +2,7 @@ class Metalink {
     constructor (...args) {
         let encoder = new TextEncoder();
         let trimmed = [...args].flat();
-        let metalink = ['<?xml version="1.0" encoding="UTF-8"?>\n<metalink xmlns="urn:ietf:params:xml:ns:metalink">', trimmed.map(this.meta4), '</metalink>'];
+        let metalink = ['<?xml version="1.0" encoding="UTF-8"?>\n<metalink version="4.0" xmlns="urn:ietf:params:xml:ns:metalink">', trimmed.map(this.meta4), '</metalink>'];
         this.text = metalink.join('\n');
         this.lines = this.text.split(/\n\s*/);
         this.arrayBuffer = encoder.encode(this.text);
@@ -12,7 +12,10 @@ class Metalink {
     meta4 (arg) {
         let file = '    ';
         let {name, size, version, language, hash = [], url, metaurl = []} = arg;
-        file += name ? '<file name="' + name + '">' : '<file>';
+        if (!name) {
+            name = url.slice(url.lastIndexOf('/') + 1);
+        }
+        file += '<file name="' + name + '">';
         if (size) {
             file += '\n        <size>' + size + '</size>';
         }
@@ -51,7 +54,7 @@ class Metalink {
         let url = URL.createObjectURL(this.blob);
         let a = document.createElement('a');
         a.href = url;
-        a.download = filename + '.metalink';
+        a.download = filename + '.meta4';
         a.click();
         a.remove();
         URL.revokeObjectURL(url);
