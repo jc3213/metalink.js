@@ -1,4 +1,4 @@
-## Usage
+## metalink.js
 
 ### Download
 [Latest](https://jc3213.github.io/metalink.js/metalink.js)
