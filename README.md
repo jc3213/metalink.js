@@ -20,8 +20,7 @@ let file2 = {url: 'https://github.com/jc3213/metalink.js/archive/refs/heads/main
 let metalink = new Metalink(file1, file2);
 ```
 
-### file
-- Syntax { `url`, `name`, `size`, `version`, `language`, `hash`, `metaurl` }
+## Properties
 - [url](#url-required)
 - [name](#name-optional)
 - [size](#size-optional)
