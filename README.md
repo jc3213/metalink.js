@@ -21,16 +21,17 @@ let metalink = new Metalink(file1, file2);
 ```
 
 ## Properties
-- [url](#url-required)
-- [name](#name-optional)
-- [size](#size-optional)
-- [version](#version-optional)
-- [language](#language-optional)
-- [hash](#hash-optional)
-- [metaurl](#metaurl-optional)
+- [url](#url) **required**
+- [name](#name)
+- [size](#size)
+- [version](#version)
+- [language](#language)
+- [hash](#hash)
+- [metaurl](#metaurl)
 
-### url *`required`*
+### url
 - The download url(s) of the file
+- **required**
 - `string`
 - `object`: {*url*, *location*}
   - `url`: *required*
@@ -38,31 +39,37 @@ let metalink = new Metalink(file1, file2);
 - `array`: [*string1*, *string2*, *string3*, ...]
 - `array`: [*object1*, *object2*, *object3*, ...]
 
-### name *`optional`*
+### name
 - The name of the file
+- *optional*
 - `string`
 
-### size *`optional`*
+### size
 - The size of the file
+- *optional*
 - `integer`
 
-### version *`optional`*
+### version
 - The version of the file
+- *optional*
 - `string`
 
-### language *`optional`*
+### language
 - The language of the file
+- *optional*
 - `string`
 
-### hash *`optional`*
+### hash
 - The hash(es) of the file
+- *optional*
 - `object`: {*type*, *hash*}
   - `type`: *required*
   - `hash`: *required*
 - `array`: [*object1*, *object2*, *object3*, ...]
 
-### metaurl *`optional`*
+### metaurl
 - The metalink(s) of the file
+- *optional*
 - `object`: {*type*, *url*}
   - `type`: *required*
   - `url`: *required*
