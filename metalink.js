@@ -10,7 +10,13 @@ class Metalink {
     version = '0.3';
     #make (args) {
         return args.flat().map(({name, size, version, language, hash, url, metaurl}) => {
-            let result = `    <file name="${name || this.#filename()}">`;
+            let uris = Array.isArray(url) ? url : [url];
+            if (!name) {
+                let uri = uris[0];
+                uri = typeof uri === 'object' ? uri.url : typeof uri === 'string' ? uri : null;
+                name = uri?.match(/\/([^/?#]+)(?:\?.*)?$/)?.[1] ?? this.#filename();
+            }
+            let result = `    <file name="${name}">`;
             if (Number.isInteger(size) && size > 0) {
                 result += `\n        <size>${size}</size>`;
             }
@@ -23,7 +29,7 @@ class Metalink {
             hash?.forEach(({type, hash}) => {
                 result += `\n        <hash type="${type}">${hash}</hash>`;
             });
-            [url].flat().forEach((arg) => {
+            uris.forEach((arg) => {
                 result += typeof arg === 'object' ? `\n        <url location="${arg.location}">${arg.url}</url>` : typeof arg === 'string' ? `\n        <url>${arg}</url>` : '';
             });
             metaurl?.forEach(({type, url}) => {
