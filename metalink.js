@@ -1,60 +1,52 @@
 class Metalink {
     constructor (...args) {
         let encoder = new TextEncoder();
-        let metalink = ['<?xml version="1.0" encoding="UTF-8"?>\n<metalink version="4.0" xmlns="urn:ietf:params:xml:ns:metalink">', args.flat().map(this.meta4), '</metalink>'];
-        this.text = metalink.join('\n');
-        this.lines = this.text.split(/\n\s*/);
+        let result = this.#make(args).join('\n');
+        this.text = `<?xml version="1.0" encoding="UTF-8"?>\n<metalink version="4.0" xmlns="urn:ietf:params:xml:ns:metalink">\n${result}\n</metalink>`;
         this.arrayBuffer = encoder.encode(this.text);
         this.dataURL = 'data:text/plain;base64,' + btoa(unescape(encodeURIComponent(this.text)));
         this.blob = new Blob([this.text], {type: 'application/metalink+xml; charset=utf-8'});
     }
-    version = '0.2';
-    meta4 (arg) {
-        let file = '    ';
-        let {name, size, version, language, hash = [], url, metaurl = []} = arg;
-        if (!name) {
-            name = url.slice(url.lastIndexOf('/') + 1);
-        }
-        file += '<file name="' + name + '">';
-        if (size) {
-            file += '\n        <size>' + size + '</size>';
-        }
-        if (version) {
-            file += '\n        <version>' + version + '</version>';
-        }
-        if (language) {
-            file += '\n        <language>' + language + '</language>';
-        }
-        let hashes = Array.isArray(hash) ? hash : [hash];
-        hashes.forEach(({type, hash}) => file += '\n        <hash type="' + type + '">' + hash + '</hash>');
-        let urls = Array.isArray(url) ? url : [url];
-        urls.forEach((arg) => {
-            if (typeof arg === 'object') {
-                let {location, url} = arg;
-                file += location ?  '\n        <location="' + location + '">' + url + '</url>' : '\n        <url>' + url + '</url>';
-            } else if (typeof arg === 'string') {
-                file += '\n        <url>' + arg + '</url>';
+    version = '0.3';
+    #make (args) {
+        return args.flat().map(({name, size, version, language, hash, url, metaurl}) => {
+            let result = `    <file name="${name || this.#filename()}">`;
+            if (Number.isInteger(size) && size > 0) {
+                result += `\n        <size>${size}</size>`;
             }
+            if (/^(\d+\.)*\d+-?(\w+)?$/.test(version)) {
+                result += `\n        <version>${version}</version>`;
+            }
+            if (language) {
+                result += `\n        <language>${language}</language>`;
+            }
+            hash?.forEach(({type, hash}) => {
+                result += `\n        <hash type="${type}">${hash}</hash>`;
+            });
+            [url].flat().forEach((arg) => {
+                result += typeof arg === 'object' ? `\n        <url location="${arg.location}">${arg.url}</url>` : typeof arg === 'string' ? `\n        <url>${arg}</url>` : '';
+            });
+            metaurl?.forEach(({type, url}) => {
+                result += `\n        <metaurl metatype="${type}">${url}</metaurl>`;
+            });
+            return `${result}\n    </file>`;
         });
-        let metaurls = Array.isArray(metaurl) ? metaurl : [metaurl];
-        metaurls.forEach(({type, url}) => file += '\n        <metaurl metatype="' + type + '">' + url + '</metaurl>');
-        return file + '\n    </file>';
     }
-    save (filename) {
-        if (!filename) {
-            let date = new Date();
-            let year = date.getFullYear();
-            let month = ('0' + (date.getMonth() + 1)).slice(-2);
-            let day = ('0' + date.getDate()).slice(-2);
-            let hours = ('0' + date.getHours()).slice(-2);
-            let minutes = ('0' + date.getMinutes()).slice(-2);
-            let seconds = ('0' + date.getSeconds()).slice(-2);
-            filename = 'metalink_' + year + month + day + '_' + hours + minutes + seconds;
-        }
+    #filename () {
+        let date = new Date();
+        let year = date.getFullYear();
+        let month = String(date.getMonth() + 1).padStart(2, '0');
+        let day = String(date.getDate()).padStart(2, '0');
+        let hours = String(date.getHours()).padStart(2, '0');
+        let minutes = String(date.getMinutes()).padStart(2, '0');
+        let seconds = String(date.getSeconds()).padStart(2, '0');
+        return `metalink_${year}${month}${day}_${hours}${minutes}${seconds}`;
+    }
+    save (filename ) {
         let url = URL.createObjectURL(this.blob);
         let a = document.createElement('a');
         a.href = url;
-        a.download = filename + '.meta4';
+        a.download = `${(filename?.trim() || this.#filename())}.meta4`;
         a.click();
         a.remove();
         URL.revokeObjectURL(url);
