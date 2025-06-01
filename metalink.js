@@ -1,21 +1,19 @@
 class Metalink {
     constructor (...args) {
         let encoder = new TextEncoder();
-        let result = this.#make(args).join('\n');
-        this.text = `<?xml version="1.0" encoding="UTF-8"?>\n<metalink version="4.0" xmlns="urn:ietf:params:xml:ns:metalink">\n${result}\n</metalink>`;
+        this.text = `<?xml version="1.0" encoding="UTF-8"?>\n<metalink version="4.0" xmlns="urn:ietf:params:xml:ns:metalink">\n${this.#make(args)}\n</metalink>`;
         this.arrayBuffer = encoder.encode(this.text);
         this.dataURL = 'data:text/plain;base64,' + btoa(unescape(encodeURIComponent(this.text)));
         this.blob = new Blob([this.text], {type: 'application/metalink+xml; charset=utf-8'});
     }
     version = '0.3';
     #make (args) {
-        return args.flat().map(({name, size, version, language, hash, url, metaurl}) => {
-            let uris = Array.isArray(url) ? url : [url];
-            if (!name) {
-                let uri = uris[0];
-                uri = typeof uri === 'object' ? uri.url : typeof uri === 'string' ? uri : null;
-                name = uri?.match(/\/([^/?#]+)(?:\?.*)?$/)?.[1] ?? this.#filename();
+        let array = [];
+        args.forEach(({name, size, version, language, hash, url, metaurl}, index) => {
+            if (!name || !url) {
+                return console.error(`parameter ${index + 1} is missing "name" or "url" properties`);
             }
+            let uris = Array.isArray(url) ? url : [url];
             let result = `    <file name="${name}">`;
             if (Number.isInteger(size) && size > 0) {
                 result += `\n        <size>${size}</size>`;
@@ -35,8 +33,9 @@ class Metalink {
             metaurl?.forEach(({type, url}) => {
                 result += `\n        <metaurl metatype="${type}">${url}</metaurl>`;
             });
-            return `${result}\n    </file>`;
+            array.push(`${result}\n    </file>`);
         });
+        return array.join('\n');
     }
     #filename () {
         let date = new Date();
